@@ -19,6 +19,13 @@ class JsCompressor(Compressor):
                 filename = self.get_filename(basename)
                 content = (SOURCE_FILE, filename, basename, elem)
                 self.split_content.append(content)
+            elif 'data-scripts' in attribs:
+                data_scripts = attribs['data-scripts'].rsplit(',')
+                for script in data_scripts:
+                    basename = self.get_basename(attribs['data-scripts'])
+                    filename = self.get_filename(basename)
+                    content = ("datatag", filename, basename, elem)
+                    self.split_content.append(content)
             else:
                 content = self.parser.elem_content(elem)
                 self.split_content.append((SOURCE_HUNK, content, None, elem))

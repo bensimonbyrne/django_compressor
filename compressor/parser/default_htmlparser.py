@@ -22,10 +22,10 @@ class DefaultHtmlParser(ParserBase, HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
-        if tag in ('style', 'script'):
+        if tag in ('style', 'script', 'div'):
             if tag == 'style':
                 tags = self._css_elems
-            elif tag == 'script':
+            elif tag == 'script' or tag == 'div':
                 tags = self._js_elems
             tags.append({
                 'tag': tag,
@@ -49,7 +49,7 @@ class DefaultHtmlParser(ParserBase, HTMLParser):
     def handle_data(self, data):
         if self._current_tag == 'style':
             self._css_elems[-1]['text'] = data
-        elif self._current_tag == 'script':
+        elif self._current_tag == 'script' or self._current_tag == 'div':
             self._js_elems[-1]['text'] = data
 
     def css_elems(self):

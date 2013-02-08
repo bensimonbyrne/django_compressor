@@ -134,7 +134,7 @@ class Compressor(object):
     def mtimes(self):
         return [str(get_mtime(value))
                 for kind, value, basename, elem in self.split_contents()
-                if kind == SOURCE_FILE]
+                if kind == SOURCE_FILE or kind == "datatag"]
 
     @cached_property
     def cachekey(self):
@@ -161,7 +161,7 @@ class Compressor(object):
                 'basename': basename,
             }
 
-            if kind == SOURCE_FILE:
+            if kind == SOURCE_FILE or kind == "datatag":
                 options = dict(options, filename=value)
                 value = self.get_filecontent(value, charset)
 
@@ -265,6 +265,17 @@ class Compressor(object):
             "Couldn't find output method for mode '%s'" % mode)
 
     def output_file(self, mode, content, forced=False, basename=None):
+        """
+        The output method that saves the content to a file and renders
+        the appropriate template with the file's URL.
+        """
+        new_filepath = self.get_filepath(content, basename=basename)
+        if not self.storage.exists(new_filepath) or forced:
+            self.storage.save(new_filepath, ContentFile(content))
+        url = mark_safe(self.storage.url(new_filepath))
+        return self.render_output(mode, {"url": url})
+
+    def output_datatag(self, mode, content, forced=False, basename=None):
         """
         The output method that saves the content to a file and renders
         the appropriate template with the file's URL.
