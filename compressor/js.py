@@ -22,7 +22,7 @@ class JsCompressor(Compressor):
             elif 'data-scripts' in attribs:
                 data_scripts = attribs['data-scripts'].rsplit(',')
                 for script in data_scripts:
-                    basename = self.get_basename(attribs['data-scripts'])
+                    basename = self.get_basename(script)
                     filename = self.get_filename(basename)
                     content = ("datatag", filename, basename, elem)
                     self.split_content.append(content)
